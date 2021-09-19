@@ -89,12 +89,9 @@ async def send_new_post(entries):
         author = entries.get('authors')[0]['name'].split('/')[-1]
         author_link = entries.get('authors')[0]['href']
     out_str = f"""
-**UPDATE RSS TORRENT**
-**Judul:** `{title}`
-**Author:** [{author}]({author_link})
-**Terakhir Diupdate:** `{time}`
+New Post Found
 """
-    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="Lihat Post", url=link)]])
+    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="View Post", url = link)]])
     if thumb:
         args = {
             'caption': out_str,
@@ -111,7 +108,7 @@ async def send_new_post(entries):
     for chat_id in RSS_CHAT_ID:
         args.update({'chat_id': chat_id})
         try:
-            if "720p" in link or "TGx" in link or "HEVC" in link or "x265" in link or "Mkvking" in link or "GalaxyRG" in link or "CracksHash" in link or "FTUApps" in link:
+            if "x265.10bit" in link or "720p" in link or "TGx" in link or "HEVC" in link or "x265" in link or "Mkvking" in link or "GalaxyRG" in link or "CracksHash" in link or "FTUApps" in link:
                 await asyncio.sleep(10)    
                 await send_rss_to_telegram(userge.bot, args, thumb)
             else:
@@ -120,7 +117,7 @@ async def send_new_post(entries):
             ChatWriteForbidden, ChannelPrivate, ChatIdInvalid,
             UserNotParticipant, UsergeBotNotFound
         ):
-            out_str = f"/mirror3 `{link}`\n\n**{title}**"
+            out_str = f"/mirror3 `{link}`"
             if 'caption' in args:
                 args.update({'caption': out_str})
             else:
@@ -139,7 +136,7 @@ async def send_rss_to_telegram(client, args: dict, path: str = None):
         await client.send_message(**args)
 
 
-@userge.on_cmd("addfeed", about={
+@userge.on_cmd("addfeedx", about={
     'header': "Add new Feed Url to get regular Updates from it.",
     'usage': "{tr}addfeed url"})
 async def add_rss_feed(msg: Message):
@@ -156,7 +153,7 @@ async def add_rss_feed(msg: Message):
     await msg.edit(out_str, log=__name__)
 
 
-@userge.on_cmd("delfeed", about={
+@userge.on_cmd("delfeedx", about={
     'header': "Delete a existing Feed Url from Database.",
     'flags': {'-all': 'Delete All Urls.'},
     'usage': "{tr}delfeed url"})
@@ -172,7 +169,7 @@ async def delete_rss_feed(msg: Message):
     await msg.edit(out_str, log=__name__)
 
 
-@userge.on_cmd("listrss", about={
+@userge.on_cmd("listrssx", about={
     'header': "List all feed URLs that you Subscribed.",
     'usage': "{tr}listrss"})
 async def list_rss_feed(msg: Message):
@@ -208,9 +205,10 @@ async def rss_worker():
                     RSS_DICT[url][1] = now
                     continue
                 await send_new_post(entry)
+                if url not in RSS_DICT:
+                    break
                 RSS_DICT[url] = [pub, now]
-                await RSS_COLLECTION.update_one(
-                    {'url': url}, {"$set": {'published': pub}}, upsert=True)
+                await RSS_COLLECTION.update_one({'url': url}, {"$set": {'published': pub}})
                 await asyncio.sleep(1)
             await asyncio.sleep(5)
         await asyncio.sleep(60)
