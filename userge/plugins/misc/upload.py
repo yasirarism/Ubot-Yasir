@@ -20,6 +20,7 @@ from PIL import Image
 from hachoir.metadata import extractMetadata
 from hachoir.parser import createParser
 from pyrogram.errors.exceptions import FloodWait
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from userge import userge, Config, Message
 from userge.utils import sort_file_name_key, progress, take_screen_shot, humanbytes
