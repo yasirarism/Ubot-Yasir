@@ -204,6 +204,7 @@ async def doc_upload(message: Message, path, del_path: bool = False,
 async def vid_upload(message: Message, path, del_path: bool = False,
                      extra: str = '', with_thumb: bool = True):
     str_path = str(path)
+    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="Indo Cloud", url = "https://t.me/indocloud")]])
     thumb = None
     if with_thumb:
         thumb = await get_thumb(str_path)
@@ -234,6 +235,7 @@ async def vid_upload(message: Message, path, del_path: bool = False,
             caption=path.name,
             parse_mode="html",
             disable_notification=True,
+            reply_markup': markup if userge.has_bot else None,
             progress=progress,
             progress_args=(message, f"uploading {extra}", str_path)
         )
