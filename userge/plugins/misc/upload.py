@@ -235,7 +235,7 @@ async def vid_upload(message: Message, path, del_path: bool = False,
             caption=path.name,
             parse_mode="html",
             disable_notification=True,
-            reply_markup': markup if userge.has_bot else None,
+            reply_markup= markup if userge.has_bot else None,
             progress=progress,
             progress_args=(message, f"uploading {extra}", str_path)
         )
