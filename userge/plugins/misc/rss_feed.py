@@ -89,7 +89,7 @@ async def send_new_post(entries):
         author = entries.get('authors')[0]['name'].split('/')[-1]
         author_link = entries.get('authors')[0]['href']
     out_str = f"""
-New Post Found
+Post Baru Ditemukan
 """
     markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="View Post", url = link)]])
     if thumb:
