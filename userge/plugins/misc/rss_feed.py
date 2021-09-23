@@ -8,22 +8,21 @@
 #
 # All rights reserved.
 
+import asyncio
 import os
+from datetime import datetime, timedelta
 from typing import Dict, List, Tuple
 
-import wget
-import asyncio
 import feedparser
-from datetime import datetime, timedelta
+import wget
 from dateutil import parser
-
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import (
     ChatWriteForbidden, ChannelPrivate, UserNotParticipant, ChatIdInvalid
 )
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from userge.utils.exceptions import UsergeBotNotFound
 from userge import userge, Message, Config, logging, get_collection, pool
+from userge.utils.exceptions import UsergeBotNotFound
 
 RSS_CHAT_ID = [int(x) for x in os.environ.get("RSS_CHAT_ID", str(Config.LOG_CHANNEL_ID)).split()]
 _LOG = logging.getLogger(__name__)
@@ -46,6 +45,7 @@ async def add_new_feed(url: str, l_u: str) -> str:
         pub, now = _parse_time(l_u)
         out_str = f"""
 #ADDED_NEW_FEED_URL
+
 \t\t**FEED URL:** `{url}`
 \t\t**LAST UPDATED:** `{pub}`
 """
@@ -60,6 +60,7 @@ async def delete_feed(url: str) -> str:
     if url in RSS_DICT:
         out_str = f"""
 #DELETED_FEED_URL
+
 \t\t**FEED_URL:** `{url}`
 """
         del RSS_DICT[url]
@@ -89,9 +90,13 @@ async def send_new_post(entries):
         author = entries.get('authors')[0]['name'].split('/')[-1]
         author_link = entries.get('authors')[0]['href']
     out_str = f"""
-Post Baru Ditemukan
+**New post Found**
+
+**Title:** `{title}`
+**Author:** [{author}]({author_link})
+**Last Updated:** `{time}`
 """
-    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="View Post", url = link)]])
+    markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="View Post Online", url=link)]])
     if thumb:
         args = {
             'caption': out_str,
@@ -108,21 +113,18 @@ Post Baru Ditemukan
     for chat_id in RSS_CHAT_ID:
         args.update({'chat_id': chat_id})
         try:
-            if "x265.10bit" in link or "720p" in link or "TGx" in link or "HEVC" in link or "x265" in link or "Mkvking" in link or "GalaxyRG" in link or "CracksHash" in link or "FTUApps" in link:
-                await asyncio.sleep(10)    
-                await send_rss_to_telegram(userge.bot, args, thumb)
-            else:
-                _LOG.info(f"{link}: >>>>>>skip<<<<<<")
+            await send_rss_to_telegram(userge.bot, args, thumb)
         except (
             ChatWriteForbidden, ChannelPrivate, ChatIdInvalid,
             UserNotParticipant, UsergeBotNotFound
         ):
-            out_str = f"/mirror3 `{link}`"
+            out_str += f"\n\n[View Post Online]({link})"
             if 'caption' in args:
                 args.update({'caption': out_str})
             else:
                 args.update({'text': out_str})
             await send_rss_to_telegram(userge, args, thumb)
+
 
 async def send_rss_to_telegram(client, args: dict, path: str = None):
     if path:
@@ -136,7 +138,7 @@ async def send_rss_to_telegram(client, args: dict, path: str = None):
         await client.send_message(**args)
 
 
-@userge.on_cmd("addfeedx", about={
+@userge.on_cmd("addfeed", about={
     'header': "Add new Feed Url to get regular Updates from it.",
     'usage': "{tr}addfeed url"})
 async def add_rss_feed(msg: Message):
@@ -153,7 +155,7 @@ async def add_rss_feed(msg: Message):
     await msg.edit(out_str, log=__name__)
 
 
-@userge.on_cmd("delfeedx", about={
+@userge.on_cmd("delfeed", about={
     'header': "Delete a existing Feed Url from Database.",
     'flags': {'-all': 'Delete All Urls.'},
     'usage': "{tr}delfeed url"})
@@ -169,7 +171,7 @@ async def delete_rss_feed(msg: Message):
     await msg.edit(out_str, log=__name__)
 
 
-@userge.on_cmd("listrssx", about={
+@userge.on_cmd("listrss", about={
     'header': "List all feed URLs that you Subscribed.",
     'usage': "{tr}listrss"})
 async def list_rss_feed(msg: Message):
