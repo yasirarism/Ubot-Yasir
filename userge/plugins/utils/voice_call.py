@@ -19,7 +19,6 @@ from traceback import format_exc
 from typing import List, Tuple
 
 import ffmpeg
-import youtube_dl as ytdl
 from pyrogram.raw import functions
 from pyrogram.types import (
     InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message as RawMessage
@@ -30,7 +29,7 @@ from pytgcalls.exceptions import GroupCallNotFoundError
 from youtubesearchpython import VideosSearch
 
 from userge import userge, Message, pool, filters, get_collection, Config
-from userge.utils import time_formatter
+from userge.utils import time_formatter, import_ytdl
 from userge.utils.exceptions import StopConversation
 
 CHANNEL = userge.getCLogger(__name__)
@@ -50,6 +49,7 @@ BACK_BUTTON_TEXT = ""
 CQ_MSG: List[RawMessage] = []
 
 call = GroupCall(userge, play_on_repeat=False)
+ytdl = import_ytdl()
 
 yt_regex = re.compile(
     r'(https?://)?(www\.)?'
