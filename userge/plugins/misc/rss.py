@@ -77,8 +77,7 @@ async def send_new_post(entries):
     author = None
     author_link = None
 
-    thumb_url = entries.get('media_thumbnail')
-    if thumb_url:
+    if thumb_url := entries.get('media_thumbnail'):
         thumb_url = thumb_url[0].get('url')
         thumb = os.path.join(Config.DOWN_PATH, f"{title}.{str(thumb_url).split('.')[-1]}")
         if not os.path.exists(thumb):
@@ -110,7 +109,7 @@ async def send_new_post(entries):
             'reply_markup': markup if userge.has_bot else None
         }
     for chat_id in RSS_CHAT_ID:
-        args.update({'chat_id': chat_id})
+        args['chat_id'] = chat_id
         try:
             if "720p" in link or "TGx" in link or "HEVC" in link or "x265" in link or "Mkvking" in link or "GalaxyRG" in link or "CracksHash" in link or "FTUApps" in link:
                 await asyncio.sleep(10)    
@@ -123,9 +122,9 @@ async def send_new_post(entries):
         ):
             out_str = f"/mirror3 `{link}`\n\n**{title}**"
             if 'caption' in args:
-                args.update({'caption': out_str})
+                args['caption'] = out_str
             else:
-                args.update({'text': out_str})
+                args['text'] = out_str
             await send_rss_to_telegram(userge, args, thumb)
 
 async def send_rss_to_telegram(client, args: dict, path: str = None):

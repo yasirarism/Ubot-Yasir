@@ -57,9 +57,7 @@ async def alive(message: Message):
 def _get_mode() -> str:
     if userge.dual_mode:
         return "Dual"
-    if Config.BOT_TOKEN:
-        return "Bot"
-    return "User"
+    return "Bot" if Config.BOT_TOKEN else "User"
 
 
 def _get_alive_text_and_markup(message: Message) -> Tuple[str, Optional[InlineKeyboardMarkup]]:
@@ -149,7 +147,6 @@ def _set_data(errored: bool = False) -> None:
     global _CHAT, _MSG_ID, _IS_TELEGRAPH  # pylint: disable=global-statement
 
     pattern_1 = r"^(http(?:s?):\/\/)?(www\.)?(t.me)(\/c\/(\d+)|:?\/(\w+))?\/(\d+)$"
-    pattern_2 = r"^https://telegra\.ph/file/\w+\.\w+$"
     if Config.ALIVE_MEDIA and not errored:
         if Config.ALIVE_MEDIA.lower().strip() == "nothing":
             _CHAT = "text_format"
@@ -157,11 +154,12 @@ def _set_data(errored: bool = False) -> None:
             return
         media_link = Config.ALIVE_MEDIA
         match_1 = re.search(pattern_1, media_link)
+        pattern_2 = r"^https://telegra\.ph/file/\w+\.\w+$"
         match_2 = re.search(pattern_2, media_link)
         if match_1:
             _MSG_ID = int(match_1.group(7))
             if match_1.group(5):
-                _CHAT = int("-100" + match_1.group(5))
+                _CHAT = int(f"-100{match_1.group(5)}")
             elif match_1.group(6):
                 _CHAT = match_1.group(6)
         elif match_2:

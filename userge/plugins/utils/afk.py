@@ -1,5 +1,6 @@
 """ setup AFK mode """
 
+
 # Copyright (C) 2020-2021 by UsergeTeam@Github, < https://github.com/UsergeTeam >.
 #
 # This file is part of < https://github.com/UsergeTeam/Userge > project,
@@ -20,7 +21,7 @@ SAVED_SETTINGS = get_collection("CONFIGS")
 AFK_COLLECTION = get_collection("AFK")
 
 IS_AFK = False
-IS_AFK_FILTER = filters.create(lambda _, __, ___: bool(IS_AFK))
+IS_AFK_FILTER = filters.create(lambda _, __, ___: IS_AFK)
 REASON = ''
 TIME = 0.0
 USERS = {}

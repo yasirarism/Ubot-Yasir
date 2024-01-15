@@ -48,7 +48,7 @@ def _get_filters_for_chat(chat_id: int) -> str:
         for name, mid in FILTERS_DATA[chat_id].items():
             if not isinstance(mid, int):
                 continue
-            out += " 🔍 `{}` , {}\n".format(name, CHANNEL.get_link(mid))
+            out += f" 🔍 `{name}` , {CHANNEL.get_link(mid)}\n"
     return out
 
 
@@ -115,10 +115,10 @@ async def delete_filters(message: Message) -> None:
         out = "`Wrong syntax`\nNo arguements"
     elif await FILTERS_COLLECTION.find_one_and_delete(
             {'chat_id': message.chat.id, 'name': filter_}):
-        out = "`Successfully deleted filter:` **{}**".format(filter_)
+        out = f"`Successfully deleted filter:` **{filter_}**"
         _filter_deleter(message.chat.id, filter_)
     else:
-        out = "`Couldn't find filter:` **{}**".format(filter_)
+        out = f"`Couldn't find filter:` **{filter_}**"
     await message.edit(text=out, del_in=3)
 
 

@@ -317,10 +317,9 @@ class SCLib(_BaseLib):
 
     def split(self, split_size: int) -> None:
         """ Split files """
-        split_size = int(split_size) * 1024 * 1024
+        split_size = split_size * 1024 * 1024
         self._file_size = os.stat(self._path).st_size
-        if self._chunk_size > split_size:
-            self._chunk_size = split_size
+        self._chunk_size = min(self._chunk_size, split_size)
         times = int(ceil(split_size / self._chunk_size))
         self._total = int(ceil(self._file_size / split_size))
         self._final_file_path = join(
@@ -333,7 +332,9 @@ class SCLib(_BaseLib):
         """ Combine Split files """
         file_name, ext = splitext(basename(self._path))
         self._final_file_path = join(dirname(self._path), file_name)
-        file_list = sorted(glob(self._final_file_path + f".{'[0-9]' * len(ext.lstrip('.'))}"))
+        file_list = sorted(
+            glob(f"{self._final_file_path}.{'[0-9]' * len(ext.lstrip('.'))}")
+        )
         self._total = len(file_list)
         self._file_size = sum((os.stat(f_).st_size for f_ in file_list))
         pool.submit_thread(self._combine_worker, file_list)

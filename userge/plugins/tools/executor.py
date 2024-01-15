@@ -186,7 +186,7 @@ async def eval_(message: Message):
     future = asyncio.get_running_loop().create_future()
     pool.submit_thread(_run_coro, future, l_d['__aexec'](*_l.values()), _callback)
     hint = cmd.split('\n')[0]
-    _EVAL_TASKS[future] = hint[:25] + "..." if len(hint) > 25 else hint
+    _EVAL_TASKS[future] = f"{hint[:25]}..." if len(hint) > 25 else hint
 
     with msg.cancel_callback(future.cancel):
         try:
@@ -213,7 +213,7 @@ async def term_(message: Message):
         parsed_cmd = parse_py_template(cmd, message)
     except Exception as e:  # pylint: disable=broad-except
         await message.err(str(e))
-        await CHANNEL.log(f"**Exception**: {type(e).__name__}\n**Message**: " + str(e))
+        await CHANNEL.log(f"**Exception**: {type(e).__name__}\n**Message**: {str(e)}")
         return
     try:
         t_obj = await Term.execute(parsed_cmd)  # type: Term

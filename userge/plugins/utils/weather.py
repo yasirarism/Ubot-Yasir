@@ -69,7 +69,7 @@ async def weather_get(message: Message):
     if "," in CITY:
         newcity = CITY.split(",")
         if len(newcity[1]) == 2:
-            CITY = newcity[0].strip() + "," + newcity[1].strip()
+            CITY = f"{newcity[0].strip()},{newcity[1].strip()}"
         else:
             country = await get_tz((newcity[1].strip()).title())
             try:
@@ -77,7 +77,7 @@ async def weather_get(message: Message):
             except KeyError:
                 await message.edit("`Invalid country.`", del_in=0)
                 return
-            CITY = newcity[0].strip() + "," + countrycode.strip()
+            CITY = f"{newcity[0].strip()},{countrycode.strip()}"
 
     url = f'https://api.openweathermap.org/data/2.5/weather?q={CITY}&appid={APPID}'
     async with aiohttp.ClientSession() as ses, ses.get(url) as res:
